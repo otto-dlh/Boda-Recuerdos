@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@source "../index.html";
+@source "./app.js";
+
+@theme {
+    --color-primary: #ec6d13;
+    --color-background-light: #fcfaf8;
+    --color-background-dark: #221810;
+    --color-accent-tan: #e7d9cf;
+    --color-text-muted: #9a6c4c;
+    --font-display: "Noto Serif", serif;
+    --font-script: "Great Vibes", cursive;
+    --radius-DEFAULT: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
