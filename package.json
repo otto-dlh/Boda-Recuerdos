@@ -4,9 +4,9 @@
   "description": "Álbum digital de fotos para Otto & Susy",
   "main": "server.js",
   "scripts": {
-    "start": "npm run build:thumbs && node server.js",
+    "start": "pnpm run build:thumbs && node server.js",
     "dev": "node server.js",
-    "build": "npm run build:css && npm run build:thumbs",
+    "build": "pnpm run build:css && pnpm run build:thumbs",
     "build:css": "npx @tailwindcss/cli -i src/input.css -o src/tailwind-output.css --minify",
     "build:thumbs": "node generate-thumbnails.js",
     "deploy": "node deploy.js"

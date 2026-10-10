@@ -20,11 +20,11 @@
 ### Opción 1: Desarrollo Local (Recomendado para desarrollo)
 
 ```bash
-# Instalar dependencias
-npm install
+# Instalar dependencias con pnpm
+pnpm install
 
 # Ejecutar en modo desarrollo
-npm run dev
+pnpm run dev
 ```
 
 Accede a: `http://localhost:3000`
@@ -50,42 +50,20 @@ Accede a: `http://localhost:3005` (o el puerto configurado en `HOST_PORT`).
 
 El repositorio cuenta con un flujo en `.github/workflows/deploy.yml` configurado para un **Self-Hosted Runner** en Linux:
 - Totalmente aislado mediante `-p boda-recuerdos`.
+- Construcción optimizada y segura con **pnpm** multi-stage en Docker.
 - No interfiere con ningún otro contenedor o runner del servidor.
 - Variables configurables en GitHub (**Settings -> Secrets and variables -> Actions**):
   - `HOST_PORT`: Puerto expuesto en el servidor (por defecto `3005`).
   - `PHOTOS_PATH`: Ruta absoluta en el servidor donde residen las fotos (con carpetas `save`, `boda`, `aniversario`).
 
-
-Accede a: `http://localhost:3000`
-
-**Comandos útiles:**
-```bash
-# Ver logs
-docker logs -f album
-
-# Detener contenedor
-docker stop album
-
-# Eliminar contenedor
-docker rm album
-```
-
-### Opción 3: Producción Local (Sin Docker)
+### Opción 4: Producción Local (Sin Docker)
 
 ```bash
 # Instalar dependencias
-npm install
+pnpm install
 
-# Ejecutar en modo producción
-npm start
-```
-
-```bash
-# Instalar dependencias
-npm install
-
-# Ejecutar servidor
-npm start
+# Ejecutar servidor en modo producción
+pnpm start
 ```
 
 Accede a: `http://localhost:3000`
