@@ -4,4 +4,13 @@ npm-debug.log
 .gitignore
 README.md
 .env
+.env.*
 .DS_Store
+.vscode
+.idea
+*.log
+
+# No incluir fotos locales en la imagen Docker (se montan por volumen)
+save
+boda
+aniversario

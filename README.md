@@ -31,38 +31,30 @@ Accede a: `http://localhost:3000`
 
 En modo desarrollo, las imágenes se cargan desde las carpetas locales.
 
-### Opción 2: Docker CLI (Para producción/distribución)
+### Opción 2: Docker Compose (Recomendado)
 
-**Construir la imagen desde el repositorio:**
 ```bash
-docker build -t boda-recuerdos https://github.com/otto-dlh/Boda-Recuerdos.git
+# Levantar el contenedor en segundo plano
+docker compose up -d --build
+
+# Ver logs
+docker compose logs -f
+
+# Detener el contenedor
+docker compose down
 ```
 
-**O construir localmente y ejecutar:**
-```bash
-# 1. Clonar el repositorio (o estar en la carpeta del proyecto)
-cd d:\Mis Proyectos\Boda&Recuerdos
+Accede a: `http://localhost:3005` (o el puerto configurado en `HOST_PORT`).
 
-# 2. Crear imagen manualmente (sin Dockerfile, usando node base)
-docker run -d \
-  --name album \
-  -p 3000:3000 \
-  -v $(pwd):/app \
-  -w /app \
-  node:18-alpine \
-  sh -c "npm install && npm start"
-```
+### Opción 3: Despliegue Automático con GitHub Actions
 
-**En Windows PowerShell:**
-```powershell
-docker run -d `
-  --name album `
-  -p 3000:3000 `
-  -v ${PWD}:/app `
-  -w /app `
-  node:18-alpine `
-  sh -c "npm install && npm start"
-```
+El repositorio cuenta con un flujo en `.github/workflows/deploy.yml` configurado para un **Self-Hosted Runner** en Linux:
+- Totalmente aislado mediante `-p boda-recuerdos`.
+- No interfiere con ningún otro contenedor o runner del servidor.
+- Variables configurables en GitHub (**Settings -> Secrets and variables -> Actions**):
+  - `HOST_PORT`: Puerto expuesto en el servidor (por defecto `3005`).
+  - `PHOTOS_PATH`: Ruta absoluta en el servidor donde residen las fotos (con carpetas `save`, `boda`, `aniversario`).
+
 
 Accede a: `http://localhost:3000`
 

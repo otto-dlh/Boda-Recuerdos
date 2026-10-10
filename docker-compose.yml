@@ -1,0 +1,29 @@
+services:
+  app:
+    container_name: boda-recuerdos
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: boda-recuerdos:latest
+    restart: unless-stopped
+    ports:
+      # Puerto configurable en el host (por defecto 3005 para no chocar con otros servicios)
+      - "${HOST_PORT:-3005}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      # Monta las carpetas de fotos del servidor hacia el contenedor
+      - ${PHOTOS_PATH:-./photos}/save:/app/save
+      - ${PHOTOS_PATH:-./photos}/boda:/app/boda
+      - ${PHOTOS_PATH:-./photos}/aniversario:/app/aniversario
+    labels:
+      - "app=boda-recuerdos"
+    networks:
+      - boda-recuerdos-network
+
+networks:
+  # Red aislada para este proyecto para evitar colisiones con otros contenedores
+  boda-recuerdos-network:
+    name: boda-recuerdos-network
+    driver: bridge

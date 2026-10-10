@@ -1,0 +1,61 @@
+name: Deploy Boda Recuerdos to Docker
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy Container
+    runs-on: self-hosted
+    env:
+      HOST_PORT: ${{ vars.HOST_PORT || '3005' }}
+      PHOTOS_PATH: ${{ vars.PHOTOS_PATH || secrets.PHOTOS_PATH || '' }}
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🛡️ Pre-deploy Validation & Folder Setup
+        run: |
+          echo "=== Verificando configuración y aislamiento ==="
+          echo "Puerto asignado en host: ${HOST_PORT}"
+
+          # Si se configuró PHOTOS_PATH, verificar y asegurar las subcarpetas necesarias
+          if [ -n "${PHOTOS_PATH}" ]; then
+            echo "Ruta de fotos configurada: ${PHOTOS_PATH}"
+            mkdir -p "${PHOTOS_PATH}/save" "${PHOTOS_PATH}/boda" "${PHOTOS_PATH}/aniversario"
+          else
+            echo "Aviso: No se configuró PHOTOS_PATH en GitHub Secrets/Variables. Usando carpeta local ./photos"
+            mkdir -p "./photos/save" "./photos/boda" "./photos/aniversario"
+          fi
+
+      - name: 🚀 Deploy con Docker Compose (Aislado)
+        run: |
+          # Detectar si se usa 'docker compose' (plugin v2) o 'docker-compose' (v1 legacy)
+          if docker compose version >/dev/null 2>&1; then
+            DOCKER_COMPOSE_CMD="docker compose"
+          else
+            DOCKER_COMPOSE_CMD="docker-compose"
+          fi
+
+          echo "Usando comando: ${DOCKER_COMPOSE_CMD}"
+
+          # IMPORTANTE: El flag '-p boda-recuerdos' aísla este proyecto por completo.
+          # Solo construirá, levantará y modificará contenedores de este proyecto.
+          # Ningún otro contenedor del servidor será afectado.
+          $DOCKER_COMPOSE_CMD -p boda-recuerdos up -d --build --remove-orphans
+
+      - name: 🧹 Limpieza segura de imágenes huérfanas de este proyecto
+        if: always()
+        run: |
+          # Solo eliminar imágenes intermedias sin etiqueta pertenecientes a este proyecto.
+          # NUNCA se ejecuta docker system prune ni se tocan contenedores ajenos.
+          docker image prune --filter "label=app=boda-recuerdos" -f 2>/dev/null || true
+
+      - name: ✅ Verificar estado del contenedor
+        run: |
+          echo "=== Estado del contenedor boda-recuerdos ==="
+          docker ps --filter "name=boda-recuerdos" --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
